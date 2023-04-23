@@ -1,0 +1,79 @@
+## Target Variables list
+# Reference EDA Docs
+# <http://edasite.eda.renesas.com/cgi-bin/lv1ww/tools/REL/data/rpr/pr_3337_0.pdf>
+#
+# v1.00 2017/02/17	Y.Oda@4M12
+# v1.01 2017/02/22      Y.Oda@4M12	;# delete si_xtalk_reselect_delta_delay
+# v1.10 2018/03/09	Y.Oda@ABBM2	;# Apply PT2016.12 variables
+# v1r02 2018/06/05      Y.Oda@ABBM2     ;# Apply AWP option for RV28F
+# v1r03 2020/03/09      Y.Oda@ABB21	;# update pba_aocvm_only_mode-> pba_derate_only_mode,  pba_recalculate_full_path(true->false)
+# v1r04 2020/04/06      Y.Oda@ABB21     ;# update timing_crpr_threshold_ps (1->2)
+
+#
+# Normal STA
+auto_wire_load_selection				FALSE	;### SameToEDA_recommend(2013.12-SP1)
+case_analysis_propagate_through_icg			TRUE	;### SameToEDA_recommend(2013.12-SP1)
+report_default_significant_digits			3	;### SameToEDA_recommend(2013.12-SP1)
+case_analysis_sequential_propagation			never	;### SameToEDA_recommend(2013.12-SP1)
+svr_keep_unconnected_nets				TRUE	;### SameToEDA_recommend(2013.12-SP1)
+timing_all_clocks_propagated				true	;### SameToEDA_recommend(2013.12-SP1)
+timing_clock_reconvergence_pessimism		same_transition	;### EDA normal/MCU SignOff spec is same_transition
+timing_crpr_remove_clock_to_data_crp			FALSE	;### SameToEDA_recommend(2013.12-SP1)
+timing_crpr_threshold_ps				2	;### Update (1->2) for TAT same to R-Car
+timing_disable_internal_inout_cell_paths		TRUE	;### EDA false/MCU doesn't analzye inout paths
+timing_early_launch_at_borrowing_latches		FALSE	;### SameToEDA_recommend(2013.12-SP1)
+timing_enable_preset_clear_arcs				FALSE	;### EDA true/MCU doesn't analyze reset/set through path
+timing_gclock_source_network_num_master_registers	1	;### EDA 10000000/MCU defines clock paths for generated clock
+timing_input_port_default_clock	FALSE				;### SameToEDA_recommend(2013.12-SP1)
+timing_remove_clock_reconvergence_pessimism		TRUE	;### SameToEDA_recommend(2013.12-SP1)
+timing_report_use_worst_parallel_cell_arc		TRUE	;### SameToEDA_recommend(2013.12-SP1)
+timing_use_zero_slew_for_annotated_arcs			auto	;### SameToEDA_recommend(2013.12-SP1)
+delay_calc_waveform_analysis_mode		disabled	;### 28nm/16nm variables
+extract_model_with_ccs_timing				false	;### SameToEDA_recommend(2015.12-SP3)
+link_keep_cells_with_pg_only_connection			true	;### SameToEDA_recommend(2015.12-SP3)
+link_keep_unconnected_cells				true	;### SameToEDA_recommend(2015.12-SP3)
+timing_enable_max_capacitance_set_case_analysis		true	;### SameToEDA_recommend_for_MaxCap_analysis
+timing_enable_max_transition_set_case_analysis		false	;### SameToEDA_recommend(PrimeTime2017.12-SP3-5-VAL-20191205)
+timing_point_arrival_attribute_compatibility		true	;### SameToEDA_recommend(2016.12-SP3-1)
+timing_enable_max_cap_precedence			false	;### SameToEDA_recommend(PrimeTime2017.12-SP3-5-VAL-20191205)
+extract_model_short_syntax_compatibility		false	;### SameToEDA_recommend(2016.12-SP3-1)
+sh_global_per_message_limit				0	;### SameToEDA_recommend(2016.12-SP3-1)
+timing_report_union_tns					true	;### SameToEDA_recommend(2016.12-SP3-1)
+timing_enable_auto_mux_clock_exclusivity		false	;### SameToEDA_recommend(PrimeTime2017.12-SP3-5-VAL-20191205)
+timing_include_uncertainty_for_pulse_checks		setup_hold	;### SameToEDA_recommend(PrimeTime2017.12-SP3-5-VAL-20191205)
+pba_exhaustive_endpoint_path_limit			25000	;### SameToEDA_recommend(PrimeTime2017.12-SP3-5-VAL-20191205)
+pba_recalculate_full_path				false	;### SameToEDA_recommend(PrimeTime2017.12-SP3-5-VAL-20191205)
+
+
+## Xtalk STA
+#si_analysis_logical_correlation_mode			TRUE	;### SameToEDA_recommend(PrimeTimeSI2012.06-SP3-1)
+#si_ccs_aggressor_alignment_mode			lookahead	;### SameToEDA_recommend(PrimeTimeSI2012.06-SP3-1)
+#si_ccs_use_gate_level_simulation			TRUE	;### SameToEDA_recommend(PrimeTimeSI2012.06-SP3-1)
+#si_enable_analysis					TRUE	;### SameToEDA_recommend(PrimeTimeSI2012.06-SP3-1)
+#si_filter_accum_aggr_noise_peak_ratio			0.03	;### SameToEDA_recommend(PrimeTime2017.12-SP3-5-VAL-20191205)
+#si_noise_update_status_level				high	;### SameToEDA_recommend(PrimeTime2017.12-SP3-5-VAL-20191205)
+#si_filter_per_aggr_noise_peak_ratio			0.01	;### SameToEDA_recommend(PrimeTime2017.12-SP3-5-VAL-20191205)
+#si_xtalk_composite_aggr_noise_peak_ratio		0.01	;### SameToEDA_recommend(PrimeTime2017.12-SP3-5-VAL-20191205)
+#si_noise_endpoint_height_threshold_ratio		0.75	;### EDA doesn't make clear recomendation/4M12 uses default value
+#si_xtalk_composite_aggr_quantile_high_pct		99.73	;### SameToEDA_recommend(PrimeTime2017.12-SP3-5-VAL-20191205)
+#si_noise_immunity_default_height_ratio			0.375	;### SameToEDA_recommend(PrimeTimeSI2012.06-SP3-1)
+#si_noise_limit_propagation_ratio			0.75	;### EDA doesn't make clear recomendation/4M12 uses default value
+#si_noise_slack_skip_disabled_arcs			FALSE	;### SameToEDA_recommend(PrimeTimeSI2012.06-SP3-1)
+#si_xtalk_delay_analysis_mode			all_path_edges	;### SameToEDA_recommend(PrimeTimeSI2012.06-SP3-1)
+#si_xtalk_double_switching_mode			clock_network	;### SameToEDA_recommend(EDA recommended clock_network)
+#si_xtalk_exit_on_max_iteration_count			2	;### SameToEDA_recommend(PrimeTimeSI2012.06-SP3-1)
+#si_xtalk_composite_aggr_mode			statistical	;### SameToEDA_recommend(PrimeTime2017.12-SP3-5-VAL-20191205)
+#si_noise_composite_aggr_mode			statistical	;### SameToEDA_recommend(PrimeTime2017.12-SP3-5-VAL-20191205)
+#
+# AOCVM STA
+pba_derate_only_mode					TRUE			;### SameToEDA_recommend(PrimeTime2017.12-SP3-5-VAL-20191205), before PT2016.12 pba_aocvm_only_mode is the target variable
+read_parasitics_load_locations				false			;### EDA true/4M12 false(Not use location for making AOCVM table)
+timing_aocvm_analysis_mode	{combined_launch_capture_depth delay_based_model}	;### SameToEDA_recommend(2013.12-SP1)
+timing_aocvm_enable_analysis				FALSE			;### SameToEDA_recommend(2013.12-SP1)
+timing_aocvm_enhanced_delay_based_model		TRUE			;### SameToEDA_recommend(2013.12-SP1)
+timing_aocvm_infinite_single_leg_bounding_box		FALSE			;### SameToEDA_recommend(2013.12-SP1)
+timing_aocvm_ocv_precedence_compatibility		FALSE			;### SameToEDA_recommend(2013.12-SP1)
+timing_aocvm_remove_edge_mismatch_crp			FALSE			;### SameToEDA_recommend(2013.12-SP1)
+
+## SMVA
+#timing_enable_cross_voltage_domain_analysis 		true

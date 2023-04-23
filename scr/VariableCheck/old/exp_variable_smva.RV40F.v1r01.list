@@ -1,0 +1,59 @@
+## Target Variables list
+# Reference EDA Docs
+# Normal/AOCVM setting <https://renesasgroup.sharepoint.com/sites/k2reldoc_Category/120_DD_EDA/001/02_EDA%E5%B8%B3%E7%A5%A8/07_EDA%E3%83%AA%E3%83%AA%E3%83%BC%E3%82%B9%E9%80%9A%E7%9F%A5/15_ReleaseNote(WW%2BPartner)/2014_ReleaseNote(WW%2BPartner)/LLWEB-00037392_EDA%E3%83%AA%E3%83%AA%E3%83%BC%E3%82%B9%E9%80%9A%E7%9F%A5_PrimeTime_I-2013.12-SP1>
+# Xtalk setting        <https://renesasgroup.sharepoint.com/sites/k2reldoc_Category/120_DD_EDA/_vti_history/1024/001/01_EDA%E8%A6%8F%E6%A0%BC/01_EDA_Manual/15_EDA_Manual(WW+Partner)/LLWEB-00011032_PrimeTimeSI_F-2011.12_%E5%88%A9%E7%94%A8%E8%AA%AC%E6%98%8E%E6%9B%B8/LLWEB-00011032_PrimeTimeSI_F-2011.12_%E5%88%A9%E7%94%A8%E8%AA%AC%E6%98%8E%E6%9B%B8.pdf>
+#
+# v1.00 2017/02/17	Y.Oda@4M12
+# v1.01 2017/02/22	Y.Oda@4M12		;# Delete si_xtalk_reselect_delta_delay
+
+#
+# Normal STA
+auto_wire_load_selection				FALSE	;### SameToEDA_recommend(2013.12-SP1)
+case_analysis_propagate_through_icg			TRUE	;### SameToEDA_recommend(2013.12-SP1)
+report_default_significant_digits			3	;### SameToEDA_recommend(2013.12-SP1)
+case_analysis_sequential_propagation			never	;### SameToEDA_recommend(2013.12-SP1)
+svr_keep_unconnected_nets				TRUE	;### SameToEDA_recommend(2013.12-SP1)
+timing_all_clocks_propagated				true	;### SameToEDA_recommend(2013.12-SP1)
+timing_clock_reconvergence_pessimism		same_transition	;### EDA normal/MCU SignOff spec is same_transition
+timing_crpr_remove_clock_to_data_crp			FALSE	;### SameToEDA_recommend(2013.12-SP1)
+timing_crpr_threshold_ps				1	;### SameToEDA_recommend(2013.12-SP1)
+timing_disable_internal_inout_cell_paths		TRUE	;### EDA false/MCU doesn't analzye inout paths
+timing_early_launch_at_borrowing_latches		FALSE	;### SameToEDA_recommend(2013.12-SP1)
+timing_enable_preset_clear_arcs				FALSE	;### EDA true/MCU doesn't analyze reset/set through path
+timing_gclock_source_network_num_master_registers	1	;### EDA 10000000/MCU defines clock paths for generated clock
+timing_input_port_default_clock	FALSE				;### SameToEDA_recommend(2013.12-SP1)
+timing_remove_clock_reconvergence_pessimism		TRUE	;### SameToEDA_recommend(2013.12-SP1)
+timing_report_use_worst_parallel_cell_arc		TRUE	;### SameToEDA_recommend(2013.12-SP1)
+timing_use_zero_slew_for_annotated_arcs			auto	;### SameToEDA_recommend(2013.12-SP1)
+delay_calc_waveform_analysis_mode		disabled	;### 28nm/16nm variables
+
+## Xtalk STA
+#si_analysis_logical_correlation_mode			TRUE	;### SameToEDA_recommend(PrimeTimeSI2012.06-SP3-1)
+#si_ccs_aggressor_alignment_mode			lookahead	;### SameToEDA_recommend(PrimeTimeSI2012.06-SP3-1)
+#si_ccs_use_gate_level_simulation			TRUE	;### SameToEDA_recommend(PrimeTimeSI2012.06-SP3-1)
+#si_enable_analysis					TRUE	;### SameToEDA_recommend(PrimeTimeSI2012.06-SP3-1)
+#si_filter_accum_aggr_noise_peak_ratio			0.10	;### SameToEDA_recommend(PrimeTimeSI2012.06-SP3-1)
+#si_filter_per_aggr_noise_peak_ratio			0.03	;### EDA 0.05/4M12 use high quality analyze
+#si_noise_endpoint_height_threshold_ratio		0.75	;### EDA doesn't make clear recomendation/4M12 uses default value
+#si_noise_immunity_default_height_ratio			0.375	;### SameToEDA_recommend(PrimeTimeSI2012.06-SP3-1)
+#si_noise_limit_propagation_ratio			0.75	;### EDA doesn't make clear recomendation/4M12 uses default value
+#si_noise_slack_skip_disabled_arcs			FALSE	;### SameToEDA_recommend(PrimeTimeSI2012.06-SP3-1)
+#si_xtalk_delay_analysis_mode			all_path_edges	;### SameToEDA_recommend(PrimeTimeSI2012.06-SP3-1)
+#si_xtalk_double_switching_mode			full_design	;### EDA doesn't make clear recomendation/4M12 use full_design to check double switching
+#si_xtalk_exit_on_max_iteration_count			2	;### SameToEDA_recommend(PrimeTimeSI2012.06-SP3-1)
+#si_xtalk_composite_aggr_mode			statistical	;### EDA disable/4M12 small aggressers are also confirmed
+#
+## AOCVM STA
+#pba_aocvm_only_mode					TRUE			;### SameToEDA_recommend(2013.12-SP1)
+#pba_exhaustive_endpoint_path_limit			25000			;### SameToEDA_recommend(2013.12-SP1)
+#pba_recalculate_full_path				true			;### EDA false/4M12 true(Not use SDF flow and require the quality of clock slew)
+#read_parasitics_load_locations				false			;### EDA true/4M12 false(Not use location for making AOCVM table)
+#timing_aocvm_analysis_mode	{combined_launch_capture_depth delay_based_model}	;### SameToEDA_recommend(2013.12-SP1)
+#timing_aocvm_enable_analysis				FALSE			;### SameToEDA_recommend(2013.12-SP1)
+#timing_aocvm_enhanced_delay_based_model		TRUE			;### SameToEDA_recommend(2013.12-SP1)
+#timing_aocvm_infinite_single_leg_bounding_box		FALSE			;### SameToEDA_recommend(2013.12-SP1)
+#timing_aocvm_ocv_precedence_compatibility		FALSE			;### SameToEDA_recommend(2013.12-SP1)
+#timing_aocvm_remove_edge_mismatch_crp			FALSE			;### SameToEDA_recommend(2013.12-SP1)
+#
+# SMVA
+timing_enable_cross_voltage_domain_analysis 		true

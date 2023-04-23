@@ -1,0 +1,13 @@
+###############################################################
+# v0r01 : Added "set_wire_load_selection_group"     M.Nakagawa
+###############################################################
+set_units
+create_clock
+create_generated_clock
+set_operating_conditions
+set_timing_derate
+set_wire_load_mode
+set_clock_uncertainty
+set_propagated_clock
+set_load
+set_wire_load_selection_group

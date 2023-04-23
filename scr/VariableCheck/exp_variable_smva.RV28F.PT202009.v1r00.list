@@ -1,0 +1,94 @@
+#################################################################
+# Target Variables list for version PT202009 process RV28F
+# Reference EDA Docs
+# <http://edasite.eda.renesas.com/cgi-bin/lv1ww/tools/REL/data/rpr/pr_3721_0.pdf>
+# Parameter set script at Musashi EWS
+# /design03/workddtd02/release/PT_PARAM/pt_param_set_202009.tcl
+# 
+# Ver   : Date       : Author       : Description
+# v1r00 : 2022/01/05 : REL/T.Manaka : Update for PT202009 for RV28F
+#
+#################################################################
+
+# Normal STA
+# application_variable_name	value	;#default/EDA_recommend(must)/MCU(Reason diff from EDA recommend)
+auto_wire_load_selection				false	;#true/false(must)/false
+case_analysis_propagate_through_icg			true	;#false/true/true
+case_analysis_sequential_propagation			never	;#never/never/never
+report_default_significant_digits			3	;#2/3/3
+svr_keep_unconnected_nets				true	;#true/true(must)/true
+timing_all_clocks_propagated				true	;#false/true(must)/true
+timing_remove_clock_reconvergence_pessimism		true	;#true/true(must)/true
+timing_clock_reconvergence_pessimism		same_transition	;#normal/same_transition/same_transition
+timing_early_launch_at_borrowing_latches		false	;#true/false(must)/false
+timing_crpr_threshold_ps				2	;#5/1/2(for save mem/tat)
+timing_disable_internal_inout_cell_paths		true	;#true/false/true(MCU doesn't analyze IO turn back path)
+timing_enable_preset_clear_arcs				false	;#false/true/false(MCU doesn't analyze reset/set through path)
+timing_input_port_default_clock				false	;#false/false/false
+timing_report_use_worst_parallel_cell_arc		true	;#true/true/true
+timing_use_zero_slew_for_annotated_arcs			auto	;#auto/auto/auto
+timing_crpr_remove_clock_to_data_crp			false	;#false/false/false
+timing_gclock_source_network_num_master_registers	1	;#10000000/10000000/1(MCU defines generated clock at each divFF/latch)
+extract_model_with_ccs_timing				false	;#false/false/false
+link_keep_cells_with_pg_only_connection			true	;#false/true/true
+link_keep_unconnected_cells				true	;#false/true/true
+timing_enable_max_capacitance_set_case_analysis		true	;#false/true/true
+timing_enable_max_transition_set_case_analysis		false	;#false/false/false
+timing_point_arrival_attribute_compatibility		true	;#true/true/true
+timing_enable_max_cap_precedence			false	;#false/false/false
+timing_override_max_capacitance_transition_lib_constraint	true	;#false/true/true
+#timing_save_pin_arrival_and_slack			true	;#false/true/true
+extract_model_short_syntax_compatibility		false	;#true/false/false
+sh_global_per_message_limit				0	;#10000/0/0
+timing_report_union_tns					true	;#true/true/true
+timing_disable_clock_gating_checks			false	;#false/false/false
+timing_enable_auto_mux_clock_exclusivity		false	;#false/false/false
+timing_include_uncertainty_for_pulse_checks		setup_hold	;#setup_hold/setup_hold/setup_hold
+pba_exhaustive_endpoint_path_limit			25000	;#infinity/25000/25000
+pba_recalculate_full_path				false	;#false/false/false
+
+# AOCVM STA
+# application_variable_name	value	;#default/EDA_recommend(must)/MCU(Reason diff from EDA recommend)
+#read_parasitics_load_locations				false			;#false/true(must)/false(MCU doesn't use location for making AOCVM table)
+#pba_derate_only_mode					true			;#false/true(must)/true
+#timing_aocvm_analysis_mode	{combined_launch_capture_depth delay_based_model}	;#separate_launch_capture_depth/{combined_launch_capture_depth delay_based_model}(must)/{combined_launch_capture_depth delay_based_model}
+#timing_aocvm_enable_analysis				false			;#false/false(must)/false
+#timing_aocvm_enhanced_delay_based_model			true			;#false/true(must)/true
+#timing_aocvm_infinite_single_leg_bounding_box		false			;#false/false(must)/false
+#timing_aocvm_ocv_precedence_compatibility		false			;#false/false(must)/false
+#timing_aocvm_remove_edge_mismatch_crp			false			;#false/false/false
+
+# Delay calculation
+# application_variable_name	value	;#default/EDA_recommend(must)/MCU(Reason diff from EDA recommend)
+delay_calc_waveform_analysis_mode		full_design	;#disabled/full_design/full_design
+rc_degrade_min_slew_when_rd_less_than_rnet	false		;#false/false/false
+rc_driver_model_mode				advanced	;#advanced/advanced/advanced
+rc_receiver_model_mode				advanced	;#advanced/advanced/advanced
+report_capacitance_use_ccs_receiver_model	true		;#true/true/true
+
+# Xtalk STA
+# application_variable_name	value	;#default/EDA_recommend(must)/MCU(Reason diff from EDA recommend)
+#si_enable_analysis					true	;#false/true(must)/true
+#si_xtalk_delay_analysis_mode			all_path_edges	;#all_paths/all_path_edged(must)/all_path_edges
+#si_xtalk_double_switching_mode			clock_network	;#disable/clock_network(must)/clock_network
+#si_filter_accum_aggr_noise_peak_ratio			0.03	;#0.03/0.03/0.03
+#si_noise_update_status_level				high	;#none/high/high
+#si_noise_composite_aggr_mode			statistical	;#disable/statistical/statistical
+#si_xtalk_composite_aggr_mode			statistical	;#disable/statistical/statistical
+#si_xtalk_composite_aggr_quantile_high_pct		99.73	;#99.73/99.73/99.73
+#si_noise_immunity_default_height_ratio			0.375	;#0.4/0.375/0.375
+#si_filter_per_aggr_noise_peak_ratio			0.01	;#0.01/0.01/0.01
+#si_xtalk_composite_aggr_noise_peak_ratio		0.01	;#0.01/0.01/0.01
+
+#si_analysis_logical_correlation_mode			true	;#true/NA/true
+#si_ccs_aggressor_alignment_mode			lookahead	;#lookahead/NA/lookahead
+#si_ccs_use_gate_level_simulation			true	;#true/NA/true
+#si_noise_endpoint_height_threshold_ratio		0.75	;#0.75/NA/0.75
+#si_noise_limit_propagation_ratio			0.75	;#0.75/NA/0.75
+#si_noise_slack_skip_disabled_arcs			false	;#false/NA/false
+#si_xtalk_exit_on_max_iteration_count			2	;#2/NA/2
+
+# SMVA STA
+# application_variable_name	value	;#default/EDA_recommend(must)/MCU(Reason diff from EDA recommend)
+timing_enable_cross_voltage_domain_analysis		true	;#false/NA/true
+timing_cross_voltage_domain_analysis_mode		legacy	;#full/NA/legacy

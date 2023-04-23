@@ -1,0 +1,99 @@
+proc relax_max_tran_hv { args } {
+set results(-relax_voltage)   ""
+set results(-data_tran)       ""
+set results(-clock_tran)      ""
+set results(-input_file)      ""
+set results(-output_file)     ""
+
+parse_proc_arguments -args $args results
+
+set my_relax_voltage     $results(-relax_voltage)
+set my_data_tran         $results(-data_tran)
+set my_clock_tran        $results(-clock_tran)
+set my_input_file        $results(-input_file)
+set my_output_file       $results(-output_file)
+
+set file   [open $my_input_file r]
+set ofile2 [open $my_output_file w]
+
+puts $ofile2 "lib_name\tcell_name\tinst_pin_name\tpin_voltage\tinst_net_name\trequired_transition\tactual_transition\tviolate_value\t(library_default)"
+puts $ofile2 "-----------------------------------------------------------------------------------"
+
+while {[gets $file line] >= 0} {
+  if {[regexp VIOLATED $line]} {
+    set inst_pin_name       [lindex $line 0]
+    set required_transition [lindex $line 1]
+    set actual_transition   [lindex $line 2]
+    set violate_value       [lindex $line 3]
+    set check_flag          VIOLATED
+    set output_flag         1
+
+    if { ![sizeof_collection [get_ports -quiet $inst_pin_name]] } {
+      set cell_name         [get_attribute [get_cells -of $inst_pin_name] ref_name]
+    } else {
+      set cell_name        ""
+    }
+
+    if { ![sizeof_collection [get_ports -quiet $inst_pin_name]] } {
+      set lib_pin           [get_lib_pins -of $inst_pin_name]
+      set lib_pin_name      [get_attribute $lib_pin full_name]
+      set lib_pin_tran      [get_attribute -quiet [get_lib_pins $lib_pin_name] max_transition]
+      set pin_voltage       [get_attribute [get_pins $inst_pin_name] power_rail_voltage_max ]
+      set clock_flag        [get_attribute -quiet [get_pins $inst_pin_name] clocks]
+      set lib_name          [get_attribute [get_libs -of [get_lib_cells -of [get_lib_pins -of [get_pins $inst_pin_name ]]]] full_name]
+      if { [get_ports -quiet -of [get_nets -of [get_pins $inst_pin_name ] -segments ]] != "" } {
+        set output_flag     0
+      }
+    } else {
+      set lib_pin           ""
+      set lib_pin_name      ""
+      set lib_pin_tran      ""
+      set pin_voltage       [get_attribute [get_ports $inst_pin_name] power_rail_voltage_max ]
+      set clock_flag        [get_attribute -quiet [get_ports $inst_pin_name] clocks]
+      set lib_name          ""
+      set output_flag       0
+    }
+
+    set inst_net      [get_net -of $inst_pin_name -top -segments]
+    set inst_net_name [get_attribute $inst_net full_name]
+
+    foreach vol_tmp $my_relax_voltage {
+      if { $pin_voltage == $vol_tmp } {
+        if { $clock_flag == "" } {
+          set required_transition $my_data_tran
+          set violate_value [expr $required_transition - $actual_transition ]
+          if { $violate_value > 0 } {
+            set check_flag "MET"
+          }
+        } else {
+          set required_transition $my_clock_tran
+          set violate_value [expr $required_transition - $actual_transition ]
+          if { $violate_value > 0 } {
+            set check_flag "MET"
+          }
+        }
+      }
+      
+    }
+
+    if { $output_flag == 1 && $check_flag == "VIOLATED" } {
+      puts $ofile2 "$lib_name\t$cell_name\t$inst_pin_name\t$pin_voltage\t$inst_net_name\t$required_transition\t$actual_transition\t$violate_value\t$check_flag\t($lib_pin_tran)"
+    }
+}
+}
+close $file
+close $ofile2
+
+}
+
+define_proc_attributes relax_max_tran_hv \
+  -info "Relax Max Transition of HV" \
+  -define_args \
+  {
+    {-relax_voltage     "specify relax voltage"    "relax_voltage"   string  required }
+    {-data_tran         "specify data tran"        "data_tran"       string  required }
+    {-clock_tran        "specify clock tran"       "clock_tran"      string  required }
+    {-input_file        "specify input file"       "input_file"      string  required }
+    {-output_file       "specify output file"      "output_file"     string  required }
+}
+

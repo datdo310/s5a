@@ -1,0 +1,231 @@
+##############################################################################
+# File    : relax.relax_max_tran_hv.proc
+# Date    : 2015/10/19
+# Author  : Yuxin.Sun
+# Version : v0r1 : modify for MCU product(80MHz->Frequency)
+###############################################################################
+# reset HV constraint value by Frequency
+###############################################################################
+# $my_freq_margin  = 0.0784 (NBTI 8%)
+# $min_period_org2 = 100000 (Data_pin without clock: initial value)
+# $min_period_org5 = 100000 (clock_pin as data  without clock: initial value)
+#------------------------------------------------------------------------------
+# proc : relax_max_tran_hv
+#------------------------------------------------------------------------------
+# HVT  : 3.0V/4.5V
+#   MaxTran(clock_path) = MIN[2.4,${min_period_tmp} * 0.14 * 0.8] [ns]
+#   MacTran(data_path)  = 2 * MaxTran(clock_path)
+#   MAX Constraint value : 40MHz
+#   MaxTran(clock_path) = 4.8 [ns]
+#   MacTran(data_path)  = 2.4 [ns]
+
+
+proc relax_max_tran_hv { args } {
+set results(-relax_voltage)   ""
+set results(-freq_margin)     ""
+set results(-data_tran)       ""
+set results(-clock_tran)      ""
+set results(-input_file)      ""
+set results(-output_file)     ""
+set results(-period_value)    ""
+
+parse_proc_arguments -args $args results
+
+set my_relax_voltage     $results(-relax_voltage)
+set my_freq_margin       $results(-freq_margin)
+set my_data_tran         $results(-data_tran)
+set my_clock_tran        $results(-clock_tran)
+set my_input_file        $results(-input_file)
+set my_output_file       $results(-output_file)
+set my_period_value      $results(-period_value)
+
+set file   [open $my_input_file r]
+set ofile2 [open $my_output_file w]
+
+
+puts $ofile2 "lib_name\tcell_name\tinst_pin_name\tpin_voltage\tinst_net_name\trequired_transition\tactual_transition\tviolate_value\t(library_default)"
+puts $ofile2 "-----------------------------------------------------------------------------------"
+
+while {[gets $file line] >= 0} {
+  if {[regexp VIOLATED $line]} {
+    set inst_pin_name       [lindex $line 0]
+    set required_transition [lindex $line 1]
+    set actual_transition   [lindex $line 2]
+    set violate_value       [lindex $line 3]
+    set check_flag          VIOLATED
+    set output_flag         1
+
+    if { ![sizeof_collection [get_ports -quiet $inst_pin_name]] } {
+      set cell_name         [get_attribute [get_cells -of $inst_pin_name] ref_name]
+    } else {
+      set cell_name        ""
+    }
+
+    if { ![sizeof_collection [get_ports -quiet $inst_pin_name]] } {
+      set lib_pin           [get_lib_pins -of $inst_pin_name]
+      set lib_pin_name      [get_attribute $lib_pin full_name]
+      set lib_pin_tran      [get_attribute -quiet [get_lib_pins $lib_pin_name] max_transition]
+      set pin_voltage       [get_attribute [get_pins $inst_pin_name] power_rail_voltage_max ]
+      set clock_flag        [get_attribute -quiet [get_pins $inst_pin_name] clocks]
+      set lib_name          [get_attribute [get_libs -of [get_lib_cells -of [get_lib_pins -of [get_pins $inst_pin_name ]]]] full_name]
+
+      if { [get_ports -quiet -of [get_nets -of [get_pins $inst_pin_name ] -segments ]] != "" } {  
+      set output_flag     0
+      }
+    } else {
+      set lib_pin           ""
+      set lib_pin_name      ""
+      set lib_pin_tran      ""
+      set pin_voltage       [get_attribute [get_ports $inst_pin_name] power_rail_voltage_max ]
+      set clock_flag        [get_attribute -quiet [get_ports $inst_pin_name] clocks]
+      set lib_name          ""
+      set output_flag       0
+    }
+
+      set inst_net      [get_net -of $inst_pin_name -top -segments]
+      set inst_net_name [get_attribute $inst_net full_name]
+
+      foreach vol_tmp $my_relax_voltage {
+      if { $pin_voltage == $vol_tmp && $output_flag == 1 } {
+      ###################### START: Get min_period (data as clock -> considerd as a clock ) or (clock_pin only)
+      set tmp1                      ""
+      set tmp2                      ""
+      set tmp3                      ""
+      set drive_pin                 ""
+      set min_clock                 ""
+      set min_clock_clockpin        ""
+      set min_period_tmp            100000; #minimum period (data_pin,no NBTI->initial value)
+      set min_period_tmp_clockpin   100000; #minimum period (clock_pin,no NBTI->initial value)
+      set min_period_org1           ""
+      set min_period_org4           ""
+      set min_period_org2           100000; #minimum period (data_pin,with NBTI->initial value)
+      set min_period_org5           100000; #minimum period (clock_pin,with NBTI->initial value)
+      set my_clock_tran_org2        ""
+      set my_clock_tran_org5        ""
+      set my_clock_tran_wo          ""; #constraint value (data_pin->2*$my_clock_tran_wo)
+      set my_clock_tran_wo_clockpin ""; #constraint value (clock_pin)
+       
+      if { $clock_flag != "" } {
+        set min_clock_clockpin [get_attribute -quiet [get_pins -quiet $inst_pin_name] clocks]
+         
+          foreach_in_collection tmp1 $min_clock_clockpin {
+            set min_period_org4 [get_attribute -quiet [get_clocks $tmp1] period]
+              if { $min_period_org4 < $min_period_org5 } {
+                  set min_period_org5 $min_period_org4
+              }
+          }
+
+        set min_period_tmp_clockpin [expr ${min_period_org5} / (1 - ${my_freq_margin})]
+
+        if { $my_period_value > $min_period_tmp_clockpin } {
+                  
+        } elseif { $my_period_value < $min_period_tmp_clockpin } {
+               set $min_period_tmp_clockpin $my_period_value
+        } else {
+               set $min_period_tmp_clockpin $my_period_value
+        }
+       }
+     ###################### START: Get min_period (data as clock -> considerd as a data ) or (data_pin only)
+      if { [all_fanin -flat -to [get_pins -quiet $inst_pin_name] -startpoints_only] != "" } { 
+              set drive_pin [all_fanin -flat -trace_arcs enabled -to [get_pins -quiet $inst_pin_name] -startpoints_only]
+      } else {
+              echo ### The startpoints are not found in Data_pin !
+      }
+
+        foreach_in_collection tmp2 ${drive_pin} {
+          if {[get_pins -quiet $tmp2] != "" } {
+            set min_clock [get_attribute -quiet [get_pins -quiet $tmp2] clocks]
+              if { $min_clock != "" } {
+                 foreach_in_collection tmp3 $min_clock {
+                   set min_period_org1 [get_attribute -quiet [get_clocks $tmp3] period]
+                     if { $min_period_org1 < $min_period_org2 } {
+                       set min_period_org2 $min_period_org1
+                      }
+                 }
+               }
+          } else {
+       ### data_pin -> port   
+                 set min_clock [get_attribute -quiet [get_timing_paths -delay_type max -from [get_ports -quiet $tmp2] -slack_lesser_than inf -nworst 1000 -max_path 1000] startpoint_clock]
+               if { $min_clock != "" } {
+                  foreach_in_collection tmp3 $min_clock {
+                     set min_period_org1 [get_attribute -quiet [get_clocks  $tmp3] period]
+                       if { $min_period_org1 < $min_period_org2 } {
+                          set min_period_org2 $min_period_org1
+                        }
+                      }
+               }
+          }
+        } 
+       if { $min_period_org2 == 100000 } {
+               set min_period_tmp $my_period_value
+       } else {
+               set min_period_tmp [expr ${min_period_org2} / (1 - ${my_freq_margin})]
+       }
+       ##### Relax data_pin constraint  
+       set my_clock_tran_org2 [expr ${min_period_tmp} * 0.14 * 0.8]
+       if { $my_clock_tran > $my_clock_tran_org2 } {
+               set my_clock_tran_wo $my_clock_tran_org2
+       } elseif { $my_clock_tran < ${my_clock_tran_org2} } {
+               set my_clock_tran_wo $my_clock_tran
+       } else {
+               set my_clock_tran_wo $my_clock_tran
+              }
+       set my_data_tran_wo [expr $my_clock_tran_wo * 2]
+       ##### Relax clock_pin constraint
+       set my_clock_tran_org5 [expr ${min_period_tmp_clockpin} * 0.14 * 0.8]
+
+        if { $clock_flag == "" } {
+          if { $min_period_tmp == $my_period_value } {
+                  set required_transition $my_data_tran;   # Data_pin(all_fanin no clock exist): Max_value(40MHz) 4.8
+          } elseif { $my_data_tran_wo >= $my_data_tran  } {
+                  set required_transition $my_data_tran;   # Data_pin: Max_value(40MHz) 4.8
+          } else {
+                  set required_transition $my_data_tran_wo
+          }
+                  set violate_value [expr $required_transition - $actual_transition ]
+
+          if { $violate_value > 0 } {
+            set check_flag "MET"
+          }
+        } else {
+          if { $my_data_tran_wo < $my_clock_tran_org5 } {
+                  set required_transition $my_data_tran_wo;             # Constrain==Min[(data as clock->clock),(data as clock->data)]  -- data
+          } elseif { $my_data_tran_wo > $my_clock_tran_org5 } {
+                  set required_transition $my_clock_tran_org5;          # Constrain==Min[(data as clock->clock),(data as clock->data)]  -- clock
+          } else {
+                  set required_transition $my_clock_tran_org5;          # "==", any one is right(data as clock->data or clock)          -- data or clock
+                 }
+          set violate_value [expr $required_transition - $actual_transition ]
+          if { $violate_value > 0 } {
+            set check_flag "MET"
+          }
+        }
+      }
+
+    } 
+       ######################## END: Complete
+
+    if { $output_flag == 1 && $check_flag == "VIOLATED" } {
+      puts $ofile2 "$lib_name\t$cell_name\t$inst_pin_name\t$pin_voltage\t$inst_net_name\t$required_transition\t$actual_transition\t$violate_value\t$check_flag\t($lib_pin_tran)"
+    }
+ }
+}
+
+close $file
+close $ofile2
+}
+
+
+define_proc_attributes relax_max_tran_hv \
+  -info "Relax Max Transition of HV" \
+  -define_args \
+  {
+    {-relax_voltage     "specify relax voltage"    "relax_voltage"   string  required }
+    {-freq_margin       "specify freq margin"      "freq_margin"     string  required }
+    {-data_tran         "specify data tran"        "data_tran"       string  required }
+    {-clock_tran        "specify clock tran"       "clock_tran"      string  required }
+    {-input_file        "specify input file"       "input_file"      string  required }
+    {-output_file       "specify output file"      "output_file"     string  required }
+    {-period_value      "specify period value"     "period_value"    string  required }
+}
+

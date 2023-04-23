@@ -1,0 +1,211 @@
+##############################################################################
+# File    : relax.relax_max_cap_hv.proc
+# Version : v0r1 Y.Sun/2015/10/19 : modify for MCU product(80MHz->Frequency)
+#           v0r2 Y.Oda/2016/12/07 : Accelerate runtime/Frequency is used only true path
+############################################################################
+# reset HV constraint value by Frequency
+############################################################################
+# $my_freq_margin  = 0.0784 (NBTI 8%)
+#---------------------------------------------------------------------------
+# proc : relax_max_cap_hv 
+# Caution: Library Voltage should be 3.0V or 4.5V.
+#---------------------------------------------------------------------------
+# HighVoltage  : 3.0V
+#   MaxCap(clock_path) = ${min_period_tmp} * 0.144 / 3.3 [ns]
+#   MacCap(data_path)  = 2 * MaxCap(clock_path)
+# MAX Constraint value : 40MHz
+#   MaxCap(clock_path) = 1.09 [ns]
+#   MacCap(data_path)  = 2.18 [ns]
+# HighVoltage  : 4.5V
+#   MaxCap(clock_path) = ${min_period_tmp} * 0.144 / 5 [ns]
+#   MacCap(data_path)  = 2 * MaxCap(clock_path)
+# MAX Constraint value : 40MHz
+#   MaxCap(clock_path) = 0.72 [ns]
+#   MacCap(data_path)  = 1.44 [ns]
+
+
+proc relax_max_cap_hv { args } {
+   set results(-freq_margin)       ""
+   set results(-data_cap_3V)       ""
+   set results(-clock_cap_3V)      ""
+   set results(-data_cap_5V)       ""
+   set results(-clock_cap_5V)      ""
+   set results(-input_file)        ""
+   set results(-output_file)       ""
+   #set results(-period_value)      ""
+
+   parse_proc_arguments -args $args results
+
+   set my_freq_margin       $results(-freq_margin)
+   set limit_data_cap_3V    $results(-data_cap_3V)
+   set limit_clock_cap_3V   $results(-clock_cap_3V)
+   set limit_data_cap_5V    $results(-data_cap_5V)
+   set limit_clock_cap_5V   $results(-clock_cap_5V)
+   set my_input_file        $results(-input_file)
+   set my_output_file       $results(-output_file)
+   if {[info exists results(-period_value)]} {
+	set my_period_value      $results(-period_value)
+	puts "Information: -period_value is obsolute option, it's not working now."
+  }
+
+
+
+   set file   [open $my_input_file r]
+   set ofile2 [open $my_output_file w]
+
+   set relax_voltage3V		3.0
+   set relax_voltage5V		4.5
+   set derate_for_clock3V	[expr 0.144 / 3.3]
+   set derate_for_clock5V	[expr 0.144 / 5.0]
+
+
+   puts $ofile2 "lib_name\tcell_name\tinst_pin_name\tpin_voltage\tinst_net_name\trequired_capacitance\tactual_capacitance\tviolate_value\t(library_default)"
+   puts $ofile2 "-----------------------------------------------------------------------------------"
+
+   while {[gets $file line] >= 0} {
+    if {[regexp VIOLATED $line]} {
+	set inst_pin_name        [lindex $line 0]
+	set required_capacitance [lindex $line 1]
+	set actual_capacitance   [lindex $line 2]
+	set violate_value        [lindex $line 3]
+	set check_flag           VIOLATED
+	set output_flag          1
+
+
+	if { ![sizeof_collection [get_ports -quiet $inst_pin_name]] } {
+	  set cell_name         [get_attribute [get_cells -of $inst_pin_name] ref_name]
+	  set lib_pin           [get_lib_pins -of $inst_pin_name]
+	  set lib_pin_name      [get_attribute $lib_pin full_name]
+	  set lib_pin_cap       [get_attribute -quiet [get_lib_pins $lib_pin_name] max_capacitance]
+	  set pin_voltage       [get_attribute [get_pins $inst_pin_name] power_rail_voltage_max ]
+	  set lib_name          [get_attribute [get_libs -of [get_lib_cells -of [get_lib_pins -of [get_pins $inst_pin_name ]]]] full_name]
+	  set inst_pin_obj      [get_pins $inst_pin_name]
+
+	  if { [get_ports -quiet -of [get_nets -of [get_pins $inst_pin_name ] -segments ]] != "" } {
+		set output_flag     0
+	  }
+	} else {
+	  set cell_name         ""
+	  set lib_pin           ""
+	  set lib_pin_name      ""
+	  set lib_pin_cap       ""
+	  set pin_voltage       [get_attribute [get_ports $inst_pin_name] power_rail_voltage_max ]
+	  set lib_name          ""
+	  set inst_pin_obj      [get_ports $inst_pin_name]
+	  set output_flag       0
+	}
+
+	set inst_net      [get_net -of $inst_pin_name -top -segments]
+	set inst_net_name [get_attribute $inst_net full_name]
+	if { [get_attribute -q $inst_pin_obj is_clock_used_as_clock] == "true" || [get_attribute -q $inst_pin_obj is_clock_used_as_data] == "true" } {
+		set clock_flag  true
+	} else {
+		set clock_flag  false
+	}
+
+
+    if { $output_flag == 1 } {
+	if {$pin_voltage == $relax_voltage3V} {
+		set derate_for_clock	$derate_for_clock3V
+		set limit_maxcap_clock	$limit_clock_cap_3V
+		set limit_maxcap_data	$limit_data_cap_3V
+	} elseif {$pin_voltage == $relax_voltage5V} {
+		set derate_for_clock	$derate_for_clock5V
+		set limit_maxcap_clock	$limit_clock_cap_5V
+		set limit_maxcap_data	$limit_data_cap_5V
+	} else {
+		# Skip: Core Voltage
+	}
+
+	if {$pin_voltage == $relax_voltage3V || $pin_voltage == $relax_voltage5V} {
+		#puts "DebugLine $line"
+################ Start: 0. Initialize variables #############################
+		set clocks_as_clock		""			;# Clock Names as clock line
+		set min_period_as_clock		100000			;# MinPeriod   as clock line
+		set clocks_as_data		""			;# Clock Names as data line
+		set clocks_as_data_wo_chk	""			;# Clock Names as data line before path check.
+		set min_period_as_data		100000			;# MinPeriod   as data line
+		set required_capacitance	$limit_maxcap_data	;# Use for HighVoltage Area maxcapacitance constraints
+		set temp_maxcap_const		$limit_maxcap_data	;# Temporary maxcapacitance constraints
+		set drive_pins			""			;# Root drivers for Data paths
+		set drive_pin			""			;# Root driver  for each Data path
+################ Start: 1. Check Clock Period as Clock #############################
+		if { $clock_flag == "true" } {
+			set clocks_as_clock		[get_attribute [get_pins $inst_pin_name] clocks]
+			set min_period_as_clock		[GET_MIN_VALUE_LIST [get_attribute $clocks_as_clock period] ]
+			set temp_maxcap_const		[expr ${min_period_as_clock} * ${derate_for_clock} / (1 - ${my_freq_margin})]
+			set required_capacitance	[GET_MIN_VALUE $temp_maxcap_const $limit_maxcap_clock]
+                }
+################ End:   1. Check Clock Period as Clock #############################
+
+################ Start: 2. Check Clock Period as Data #############################
+		#set drive_pins_obj [all_fanin -flat -trace_arcs enabled -to [get_pins -quiet $inst_pin_name] -startpoints_only]
+		set drive_pins_obj [all_fanin -flat -trace_arcs timing -to [get_pins -quiet $inst_pin_name] -startpoints_only]
+		if { [get_object_name $drive_pins_obj] != "" } {
+			set drive_pins [get_object_name $drive_pins_obj]
+		} else {
+			puts "### The startpoints are not found in Data_pin($inst_pin_name) !"
+		}
+
+		foreach drive_pin $drive_pins {
+			# Check whether Driver is Port or Pin.
+			if {[get_pins -q $drive_pin] != ""} {	;# Pin
+				#set clocks_as_data [get_attribute -quiet [get_pins -quiet $drive_pin] clocks]						;# v0r1 original
+				set clocks_as_data_wo_chk [add_to_collection $clocks_as_data_wo_chk [get_attribute -quiet [get_pins -quiet $drive_pin] clocks] -unique]
+
+			} else {			;# Port
+				#set clocks_as_data [get_attribute -quiet [get_timing_paths -delay_type max \
+				#       -from [get_ports -quiet $drive_pin] -slack_lesser_than inf -nworst 1000 -max_path 1000 ] startpoint_clock]	;# v0r1 original
+				set clocks_as_data_wo_chk [get_attribute -quiet [get_timing_paths -delay_type max  -group * \
+					-from [get_ports -quiet $drive_pin] -through [get_pins $inst_pin_name] -slack_lesser_than inf -start_end ] startpoint_clock]
+			}
+		}
+		## Check Paths are constrained.
+		foreach_in_collection check_clock $clocks_as_data_wo_chk        {
+			if {[sizeof_collection [get_timing_paths -delay_type max -from [get_clocks $check_clock] -through [get_pins $inst_pin_name] -slack_lesser_than inf]] != 0 } {
+				set clocks_as_data [ add_to_collection $clocks_as_data $check_clock -unique ]
+			}
+		}
+
+		if { $clocks_as_data != "" } {
+			set min_period_as_data [GET_MIN_VALUE [GET_MIN_VALUE_LIST [get_attribute $clocks_as_data period] ] $min_period_as_data]
+			#puts "Debug $min_period_as_data [get_object_name $clocks_as_data] Drive:$drive_pin"
+		}
+		set temp_maxcap_const	 [expr ${min_period_as_data} * ${derate_for_clock} * 2 / (1 - ${my_freq_margin})]
+		set required_capacitance [GET_MIN_VALUE [GET_MIN_VALUE $temp_maxcap_const $limit_maxcap_data] $required_capacitance]
+################ End:   2. Check Clock Period as Data #############################
+
+################ Start: 3. Caluculate Violation       #############################
+		set violate_value [expr $required_capacitance - $actual_capacitance ]
+		if { $violate_value > 0 } {
+			set check_flag "MET"
+		}
+################ End:   3. Caluculate Violation       #############################
+	}	;# Endif pin_voltage 3V/5V
+       ######################## END: Complete
+     }	;# End if output_flag
+     if { $output_flag == 1 && $check_flag == "VIOLATED" } {
+	puts $ofile2 "$lib_name\t$cell_name\t$inst_pin_name\t$pin_voltage\t$inst_net_name\t$required_capacitance\t$actual_capacitance\t$violate_value\t$check_flag\t($lib_pin_cap)"
+     }
+
+    }	;# End if Vio
+   }	;# End while
+   close $file
+   close $ofile2
+
+}	;# End Proc
+
+define_proc_attributes relax_max_cap_hv \
+  -info "Relax Max Capacitance of HV" \
+  -define_args \
+  {
+    {-freq_margin      "specify freq margin"     "freq_margin"     string  required }
+    {-data_cap_3V      "specify data cap 3V"     "data_cap_3V"     string  required }
+    {-clock_cap_3V     "specify clock cap 3V"    "clock_cap_3V"    string  required }
+    {-data_cap_5V      "specify data cap 5V"     "data_cap_5V"     string  required }
+    {-clock_cap_5V     "specify clock cap 5V"    "clock_cap_5V"    string  required }
+    {-input_file       "specify input file"      "input_file"      string  required }
+    {-output_file      "specify output file"     "output_file"     string  required }
+	{-period_value     "specify period value"    "period_value"    string  optional }
+}
+
