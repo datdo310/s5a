@@ -1,0 +1,213 @@
+    
+---------------------------------------------------------------------------
+##_The_result_Lump_check_NG.
+##_Please_check_below_file :
+---------------------------------------------------------------------------
+./Report/rep.SPEF.MIN_HT5V_SYSTEM_HOLD_pin2pin_parasitics.log
+./Report/rep.SPEF.MAX_LT3V_DFT_SETUP_MBIST_pin2pin_parasitics.log
+./Report/rep.SPEF.MIN_HT5V_DFT_HOLD_SCAN_pin2pin_parasitics.log
+    
+    
+    
+---------------------------------------------------------------------------
+##_The_result_Annotation_check_NG.
+##_Please_check_below_file :
+---------------------------------------------------------------------------
+./Report/rep.not_annotated_SPEF.MIN_HT5V_SYSTEM_HOLD_parasitics.log
+./Report/rep.not_annotated_SPEF.MAX_LT3V_DFT_SETUP_MBIST_parasitics.log
+./Report/rep.not_annotated_SPEF.MIN_HT5V_DFT_HOLD_SCAN_parasitics.log
+    
+    
+---------------------------------------------------------------------------
+##_Check_if_we_can_use_Hier_Spef.
+##_Below_file_is_Hier_SPEF_information.
+---------------------------------------------------------------------------
+#Info_Hier_Spef
+
+
+##SETUP##
+------------------------------------------------------------------------------------
+Scenario                        ratio    Num    WNS    TNS       Enum    EWNS    ETNS
+------------------------------------------------------------------------------------
+MAX_HT3V_SYSTEM_SETUP          NA NA NA NA NA NA NA
+MAX_LT3V_SYSTEM_SETUP          3.263   90279 -29.443 -22978.369   15200 -26.004 -25.764
+MAX_HT5V_SYSTEM_SETUP          NA NA NA NA NA NA NA
+MAX_LT5V_SYSTEM_SETUP          NA NA NA NA NA NA NA
+MAX_HT3V_SCAN_SETUP            NA NA NA NA NA NA NA
+MAX_LT3V_SCAN_SETUP            10000.000   97384 -25.661 -26594.987   18844 -15.872 -15.212
+MAX_HT5V_SCAN_SETUP            NA NA NA NA NA NA NA
+MAX_LT5V_SCAN_SETUP            NA NA NA NA NA NA NA
+MAX_HT3V_MBIST_SETUP           NA NA NA NA NA NA NA
+MAX_LT3V_MBIST_SETUP           2.679    2104 -2.883 -1783.177    1415 -2.104 -1.589
+MAX_HT5V_MBIST_SETUP           NA NA NA NA NA NA NA
+MAX_LT5V_MBIST_SETUP           NA NA NA NA NA NA NA
+MAX_HT3V_FBIST_SETUP           NA NA NA NA NA NA NA
+MAX_LT3V_FBIST_SETUP           10000.000    2763 -21.214 -2696.763       2 -2.577 -2.577
+MAX_HT5V_FBIST_SETUP           NA NA NA NA NA NA NA
+MAX_LT5V_FBIST_SETUP           NA NA NA NA NA NA NA
+------------------------------------------------------------------------------------
+TOTAL                          10000.000  192530 -29.443 -54053.296   35461 -26.004 -45.142
+------------------------------------------------------------------------------------
+
+
+##HOLD##
+------------------------------------------------------------------------------------
+Scenario                                 Num    WNS    TNS                           
+------------------------------------------------------------------------------------
+MAX_HT3V_SYSTEM_HOLD           NA NA NA
+MAX_LT3V_SYSTEM_HOLD           NA NA NA
+MAX_HT5V_SYSTEM_HOLD           NA NA NA
+MAX_LT5V_SYSTEM_HOLD                 226642 -59.338 -247608.002
+MAX_LV_SYSTEM_HOLD             NA NA NA
+MIN_HT3V_SYSTEM_HOLD           NA NA NA
+MIN_LT3V_SYSTEM_HOLD           NA NA NA
+MIN_HT5V_SYSTEM_HOLD                 176629 -24.476 -93143.747
+MIN_LT5V_SYSTEM_HOLD           NA NA NA
+MIN_BI_SYSTEM_HOLD             NA NA NA
+MAX_LT3V_AOCVM_SYSTEM_HOLD     NA NA NA
+MAX_HT3V_SCAN_HOLD             NA NA NA
+MAX_LT3V_SCAN_HOLD             NA NA NA
+MAX_HT5V_SCAN_HOLD             NA NA NA
+MAX_LT5V_SCAN_HOLD                   669934 -15.805 -572112.223
+MAX_LV_SCAN_HOLD               NA NA NA
+MIN_HT3V_SCAN_HOLD             NA NA NA
+MIN_LT3V_SCAN_HOLD             NA NA NA
+MIN_HT5V_SCAN_HOLD                   414607 -16.151 -207749.589
+MIN_LT5V_SCAN_HOLD             NA NA NA
+MIN_BI_SCAN_HOLD               NA NA NA
+MAX_LT3V_AOCVM_SCAN_HOLD       NA NA NA
+MAX_HT3V_MBIST_HOLD            NA NA NA
+MAX_LT3V_MBIST_HOLD            NA NA NA
+MAX_HT5V_MBIST_HOLD            NA NA NA
+MAX_LT5V_MBIST_HOLD                    7838 -59.335 -11639.441
+MAX_LV_MBIST_HOLD              NA NA NA
+MIN_HT3V_MBIST_HOLD            NA NA NA
+MIN_LT3V_MBIST_HOLD            NA NA NA
+MIN_HT5V_MBIST_HOLD                    3094 -15.552 -11552.802
+MIN_LT5V_MBIST_HOLD            NA NA NA
+MIN_BI_MBIST_HOLD              NA NA NA
+MAX_LT3V_AOCVM_MBIST_HOLD      NA NA NA
+MAX_HT3V_FBIST_HOLD            NA NA NA
+MAX_LT3V_FBIST_HOLD            NA NA NA
+MAX_HT5V_FBIST_HOLD            NA NA NA
+MAX_LT5V_FBIST_HOLD                   79852 -3.869 -114212.759
+MAX_LV_FBIST_HOLD              NA NA NA
+MIN_HT3V_FBIST_HOLD            NA NA NA
+MIN_LT3V_FBIST_HOLD            NA NA NA
+MIN_HT5V_FBIST_HOLD                   67691 -5.474 -71074.656
+MIN_LT5V_FBIST_HOLD            NA NA NA
+MIN_BI_FBIST_HOLD              NA NA NA
+MAX_LT3V_AOCVM_FBIST_HOLD      NA NA NA
+------------------------------------------------------------------------------------
+TOTAL                               1646287 -59.338 -1329093.219
+------------------------------------------------------------------------------------
+
+
+##SMVA_SETUP##
+------------------------------------------------------------------------------------
+Scenario                        ratio    Num    WNS    TNS       Enum    EWNS    ETNS
+------------------------------------------------------------------------------------
+SMVA_MAX_HT3V_SYSTEM_SETUP     NA NA NA NA NA NA NA
+SMVA_MAX_LT3V_SYSTEM_SETUP     NA NA NA NA NA NA NA
+SMVA_MAX_HT3V_SCAN_SETUP       NA NA NA NA NA NA NA
+SMVA_MAX_LT3V_SCAN_SETUP       NA NA NA NA NA NA NA
+SMVA_MAX_HT3V_MBIST_SETUP      NA NA NA NA NA NA NA
+SMVA_MAX_LT3V_MBIST_SETUP      NA NA NA NA NA NA NA
+SMVA_MAX_HT3V_FBIST_SETUP      NA NA NA NA NA NA NA
+SMVA_MAX_LT3V_FBIST_SETUP      NA NA NA NA NA NA NA
+------------------------------------------------------------------------------------
+TOTAL                          0.000       0 0.000 0.000       0 0.000 0.000
+------------------------------------------------------------------------------------
+
+
+##SMVA_HOLD##
+------------------------------------------------------------------------------------
+Scenario                                 Num    WNS    TNS                           
+------------------------------------------------------------------------------------
+SMVA_MAX_HT3V_SYSTEM_HOLD      NA NA NA
+SMVA_MAX_LT3V_SYSTEM_HOLD      NA NA NA
+SMVA_MIN_HT3V_SYSTEM_HOLD      NA NA NA
+SMVA_MIN_LT3V_SYSTEM_HOLD      NA NA NA
+SMVA_MAX_HT3V_SCAN_HOLD        NA NA NA
+SMVA_MAX_LT3V_SCAN_HOLD        NA NA NA
+SMVA_MIN_HT3V_SCAN_HOLD        NA NA NA
+SMVA_MIN_LT3V_SCAN_HOLD        NA NA NA
+SMVA_MAX_HT3V_MBIST_HOLD       NA NA NA
+SMVA_MAX_LT3V_MBIST_HOLD       NA NA NA
+SMVA_MIN_HT3V_MBIST_HOLD       NA NA NA
+SMVA_MIN_LT3V_MBIST_HOLD       NA NA NA
+SMVA_MAX_HT3V_FBIST_HOLD       NA NA NA
+SMVA_MAX_LT3V_FBIST_HOLD       NA NA NA
+SMVA_MIN_HT3V_FBIST_HOLD       NA NA NA
+SMVA_MIN_LT3V_FBIST_HOLD       NA NA NA
+------------------------------------------------------------------------------------
+TOTAL                                     0 0.000 0.000
+------------------------------------------------------------------------------------
+
+
+##SETUP_XTALK##
+------------------------------------------------------------------------------------
+Scenario                        ratio    Num    WNS    TNS       Enum    EWNS    ETNS
+------------------------------------------------------------------------------------
+XTALK_MAX_HT3V_SYSTEM_SETUP    NA NA NA NA NA NA NA
+XTALK_MAX_LT3V_SYSTEM_SETUP    NA NA NA NA NA NA NA
+XTALK_MAX_HT5V_SYSTEM_SETUP    NA NA NA NA NA NA NA
+XTALK_MAX_LT5V_SYSTEM_SETUP    NA NA NA NA NA NA NA
+XTALK_MAX_HT3V_SCAN_SETUP      NA NA NA NA NA NA NA
+XTALK_MAX_LT3V_SCAN_SETUP      NA NA NA NA NA NA NA
+XTALK_MAX_HT5V_SCAN_SETUP      NA NA NA NA NA NA NA
+XTALK_MAX_LT5V_SCAN_SETUP      NA NA NA NA NA NA NA
+XTALK_MAX_HT3V_MBIST_SETUP     NA NA NA NA NA NA NA
+XTALK_MAX_LT3V_MBIST_SETUP     NA NA NA NA NA NA NA
+XTALK_MAX_HT5V_MBIST_SETUP     NA NA NA NA NA NA NA
+XTALK_MAX_LT5V_MBIST_SETUP     NA NA NA NA NA NA NA
+XTALK_MAX_HT3V_FBIST_SETUP     NA NA NA NA NA NA NA
+XTALK_MAX_LT3V_FBIST_SETUP     NA NA NA NA NA NA NA
+XTALK_MAX_HT5V_FBIST_SETUP     NA NA NA NA NA NA NA
+XTALK_MAX_LT5V_FBIST_SETUP     NA NA NA NA NA NA NA
+------------------------------------------------------------------------------------
+TOTAL                          0.000       0 0.000 0.000       0 0.000 0.000
+------------------------------------------------------------------------------------
+
+
+##HOLD_XTALK##
+------------------------------------------------------------------------------------
+Scenario                                 Num    WNS    TNS                           
+------------------------------------------------------------------------------------
+XTALK_MAX_HT3V_SYSTEM_HOLD     NA NA NA
+XTALK_MAX_LT3V_SYSTEM_HOLD     NA NA NA
+XTALK_MIN_HT3V_SYSTEM_HOLD     NA NA NA
+XTALK_MIN_LT3V_SYSTEM_HOLD     NA NA NA
+XTALK_MAX_HT5V_SYSTEM_HOLD     NA NA NA
+XTALK_MAX_LT5V_SYSTEM_HOLD     NA NA NA
+XTALK_MIN_HT5V_SYSTEM_HOLD     NA NA NA
+XTALK_MIN_LT5V_SYSTEM_HOLD     NA NA NA
+XTALK_MAX_HT3V_SCAN_HOLD       NA NA NA
+XTALK_MAX_LT3V_SCAN_HOLD       NA NA NA
+XTALK_MIN_HT3V_SCAN_HOLD       NA NA NA
+XTALK_MIN_LT3V_SCAN_HOLD       NA NA NA
+XTALK_MAX_HT5V_SCAN_HOLD       NA NA NA
+XTALK_MAX_LT5V_SCAN_HOLD       NA NA NA
+XTALK_MIN_HT5V_SCAN_HOLD       NA NA NA
+XTALK_MIN_LT5V_SCAN_HOLD       NA NA NA
+XTALK_MAX_HT3V_MBIST_HOLD      NA NA NA
+XTALK_MAX_LT3V_MBIST_HOLD      NA NA NA
+XTALK_MIN_HT3V_MBIST_HOLD      NA NA NA
+XTALK_MIN_LT3V_MBIST_HOLD      NA NA NA
+XTALK_MAX_HT5V_MBIST_HOLD      NA NA NA
+XTALK_MAX_LT5V_MBIST_HOLD      NA NA NA
+XTALK_MIN_HT5V_MBIST_HOLD      NA NA NA
+XTALK_MIN_LT5V_MBIST_HOLD      NA NA NA
+XTALK_MAX_HT3V_FBIST_HOLD      NA NA NA
+XTALK_MAX_LT3V_FBIST_HOLD      NA NA NA
+XTALK_MIN_HT3V_FBIST_HOLD      NA NA NA
+XTALK_MIN_LT3V_FBIST_HOLD      NA NA NA
+XTALK_MAX_HT5V_FBIST_HOLD      NA NA NA
+XTALK_MAX_LT5V_FBIST_HOLD      NA NA NA
+XTALK_MIN_HT5V_FBIST_HOLD      NA NA NA
+XTALK_MIN_LT5V_FBIST_HOLD      NA NA NA
+------------------------------------------------------------------------------------
+TOTAL                                     0 0.000 0.000
+------------------------------------------------------------------------------------
+
+
